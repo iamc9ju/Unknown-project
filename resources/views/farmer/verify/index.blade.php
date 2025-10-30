@@ -3,7 +3,7 @@
 @section('styles')
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap4.min.css">
-    
+
     <style>
         /* ส่วนเพิ่มเติม: จัดข้อความ placeholder ให้อยู่กึ่งกลาง */
         #search-pending::placeholder {
@@ -11,23 +11,27 @@
         }
 
         /* สำหรับ Browser เก่าที่อาจจะยังใช้ Prefixes */
-        #search-pending::-webkit-input-placeholder { /* Chrome, Safari */
+        #search-pending::-webkit-input-placeholder {
+            /* Chrome, Safari */
             text-align: center;
         }
 
-        #search-pending:-moz-placeholder { /* Firefox 18- */
+        #search-pending:-moz-placeholder {
+            /* Firefox 18- */
             text-align: center;
         }
 
-        #search-pending::-moz-placeholder { /* Firefox 19+ */
+        #search-pending::-moz-placeholder {
+            /* Firefox 19+ */
             text-align: center;
         }
 
-        #search-pending:-ms-input-placeholder { /* Internet Explorer */
+        #search-pending:-ms-input-placeholder {
+            /* Internet Explorer */
             text-align: center;
         }
 
-        
+
         #pending-farmers-table {
             font-size: 14px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -255,7 +259,6 @@
                             <th width="8%" class="text-center bg-primary bg-opacity-25">พื้นที่ (ไร่)</th>
                             <th width="10%" class="text-center bg-primary bg-opacity-25">ปริมาณข้าว (กก.)</th>
                             <th width="10%" class="text-center bg-primary bg-opacity-25">สถานะ</th>
-                            <th width="20%" class="bg-primary bg-opacity-25">ผู้รับรอง</th>
                             <th width="10%" class="text-center bg-primary bg-opacity-25">การดำเนินการ</th>
                         </tr>
                     </thead>
@@ -311,7 +314,7 @@
                     selectedVerifierId = null;
                     $('#selected-approver-info').slideUp();
                     $('#pending-farmers-section').slideUp();
-                    
+
                     // ทำลาย DataTable ถ้ามี
                     if (dataTable) {
                         dataTable.destroy();
@@ -349,13 +352,13 @@
         // แสดงรายการที่รอการรับรอง
         function renderPendingFarmers(farmers) {
             const tbody = $('#pending-farmers-list');
-            
+
             // ทำลาย DataTable เดิมก่อน (ถ้ามี)
             if (dataTable) {
                 dataTable.destroy();
                 dataTable = null;
             }
-            
+
             tbody.empty();
 
             if (farmers.length === 0) {
@@ -396,20 +399,33 @@
                     }
                 },
                 "pageLength": 10,
-                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "ทั้งหมด"]],
-                "order": [[1, 'asc']], // เรียงตามรหัสเกษตรกรโดย default
-                "columnDefs": [
-                    { "orderable": false, "targets": [7, 8] }, // ปิดการ sort สำหรับคอลัมน์ผู้รับรองและการดำเนินการ
-                    { "type": "num", "targets": [0, 1, 4, 5] }, // กำหนดให้เป็นตัวเลข
-                    { "searchable": false, "targets": [8] } // ไม่ให้ค้นหาในคอลัมน์การดำเนินการ
+                "lengthMenu": [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, "ทั้งหมด"]
+                ],
+                "order": [
+                    [1, 'asc']
+                ], // เรียงตามรหัสเกษตรกรโดย default
+                "columnDefs": [{
+                        "orderable": false,
+                        "targets": [7]
+                    }, // ปิดการ sort เฉพาะคอลัมน์สุดท้าย (การดำเนินการ)
+                    {
+                        "type": "num",
+                        "targets": [0, 1, 4, 5]
+                    },
+                    {
+                        "searchable": false,
+                        "targets": [7]
+                    }
                 ],
                 "drawCallback": function() {
                     // อัพเดทลำดับหลังจาก sort หรือ paginate
                     updateTableNumbers();
                 },
                 "dom": '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
-                       '<"row"<"col-sm-12"tr>>' +
-                       '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>'
+                    '<"row"<"col-sm-12"tr>>' +
+                    '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>'
             });
         }
 
@@ -423,15 +439,6 @@
                 statusBadge = '<span class="badge text-success">รับรองแล้ว</span>';
             } else {
                 statusBadge = '<span class="badge text-warning">รอการรับรอง</span>';
-            }
-
-            let approversList = '';
-            if (farmer.verifier_list.length > 0) {
-                approversList = farmer.verifier_list.map(function(approver) {
-                    return `<small><i class="fas fa-check text-success"></i> ${approver.first_name} ${approver.last_name}</small>`;
-                }).join('<br>');
-            } else {
-                approversList = '<small class="text-muted">ยังไม่มีผู้รับรอง</small>';
             }
 
             let actionButton = '';
@@ -469,11 +476,11 @@
                 ${statusBadge}<br>
                 <span class="fw-light">${approvalCount}/5</span>
             </td>
-            <td class="text-center fw-light">${approversList}</td>
             <td class="text-center fw-light">${actionButton}</td>
         </tr>
     `;
         }
+
 
         // รับรองเกษตรกร
         function approveFarmer(farmerId) {
@@ -482,10 +489,10 @@
             }
 
             $.ajax({
-                url: `/farmer-verify/${farmerId}/approve`,
+                url: `https://bservcpe.eng.kps.ku.ac.th/db25/db25_076/lara8Template/public/farmer-verify/${farmerId}/verify`,
                 method: 'POST',
                 data: {
-                    approver_id: selectedVerifierId,
+                    verifier_id: selectedVerifierId,
                     _token: $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(response) {
@@ -522,7 +529,7 @@
                                 row.fadeOut(function() {
                                     // ลบ row ผ่าน DataTable API
                                     dataTable.row(row).remove().draw();
-                                    
+
                                     const count = dataTable.rows().count();
                                     $('#pending-count').text(count);
                                     if (count === 0) {
@@ -538,9 +545,9 @@
                     }
                 },
                 error: function(xhr) {
-                    const errorMessage = xhr.responseJSON && xhr.responseJSON.message 
-                        ? xhr.responseJSON.message 
-                        : 'เกิดข้อผิดพลาดในการรับรองเกษตรกร';
+                    const errorMessage = xhr.responseJSON && xhr.responseJSON.message ?
+                        xhr.responseJSON.message :
+                        'เกิดข้อผิดพลาดในการรับรองเกษตรกร';
                     alert('เกิดข้อผิดพลาด: ' + errorMessage);
                 }
             });
@@ -548,7 +555,9 @@
 
         function updateTableNumbers() {
             if (dataTable) {
-                dataTable.rows({page: 'current'}).every(function(rowIdx, tableLoop, rowLoop) {
+                dataTable.rows({
+                    page: 'current'
+                }).every(function(rowIdx, tableLoop, rowLoop) {
                     const row = this.node();
                     $(row).find('td:first').text(dataTable.page.info().start + rowLoop + 1);
                 });

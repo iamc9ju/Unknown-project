@@ -105,11 +105,12 @@ class FarmerVerifyController extends Controller
     //รับรองเกษตรกร
     public function verify(Request $request,Farmer $farmer){
         $request->validate([
-            'farmer_id' => 'required|exists:farmers,farmer_id' //คือะไรนิ่ approver_id
+            'verifier_id' => 'required|exists:farmers,farmer_id' //คือะไรนิ่ approver_id
         ]);
         
         $farmer = Farmer::findOrFail($farmer->farmer_id);
-        $verifier = Farmer::findOrFail($request->farmer_id);
+        
+        $verifier = Farmer::findOrFail($request->verifier_id);
 
         //ตรวจสอบสิทธิ์
         if(!$verifier->canVerify($farmer)){

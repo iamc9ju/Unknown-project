@@ -325,8 +325,8 @@
                         <td data-order="{{ $farmer->pledged_amount_kg }}">{{ number_format($farmer->pledged_amount_kg, 2) }}</td>
                         <td data-order="{{ $farmer->remaining_right_kg }}">{{ number_format($farmer->remaining_right_kg, 2) }}</td>
                         <td data-order="{{ $farmer->is_certified ? 1 : 0 }}">
-                            @if ($farmer->is_certified)
-                                <span class="status-badge status-invited">ผ่านการรับรอง</span>
+                            @if ($farmer->verification_status)
+                                <span class="status-badge status-invited">รับรองแล้ว</span>
                             @else
                                 <span class="status-badge status-absent">ยังไม่รับรอง</span>
                             @endif
